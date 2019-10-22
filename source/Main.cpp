@@ -1,4 +1,3 @@
-
 // main.cpp
 #include "SDL.h"
 #include "SDL_mixer.h"
@@ -69,7 +68,6 @@ int main(int argc, char* argv[])
 	else
 	{
 		bool quit = false;
-		// make root node
 		RootNode currentNode(arcadeSystemRenderer, nullptr);
 		while (!quit)
 		{	
@@ -84,11 +82,11 @@ int main(int argc, char* argv[])
 					quit = true;
 				}
 			}
+			currentNode.update(nullptr);
+			currentNode.render(arcadeSystemRenderer);
+			SDL_RenderPresent(arcadeSystemRenderer);
 		}
-		currentNode.update(nullptr);
-		currentNode.render(arcadeSystemRenderer);
-		SDL_RenderPresent(arcadeSystemRenderer);
 	}
+	
 	return 0;
 }
-
