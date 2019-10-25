@@ -1,62 +1,80 @@
-// RootNode 
- 
-// include the files we need
+// RootNode.h
+
 #include "Node.h"
 #include "Config.h"
 #include "MenuScreen.h" 
 #include "SimpleButton.h" 
+#include "HighscoresNode.h"
+#include "GameMenuNode.h"
+#include "OptionsNode.h"
  
-class RootNode : public Node // publicly inherits from Node
+class RootNode : public Node // inherits from Node
 {
+private:
+ 
+    // every node holds pointers to its children
+    HighscoresNode* highscoresNode; 
+    GameMenuNode* gameMenuNode;
+    OptionsNode* optionsNode;
+ 
+    // every node holds a pointer to its parent
+    Node* parentNode = nullptr;
 public:
-    // Constructor                                            // initializer list
-    RootNode(SDL_Renderer* renderer_in, Node* parentNode_in): Node(renderer_in, parentNode_in)
+    // pass this in from main when you create it
+    RootNode(SDL_Renderer* renderer_in = nullptr, Node* parentNode_in = nullptr)
+        // We must do this initialization list in this way because the constructor for the highscoresNode
+        // actually is called before rootNode because we made a highscoresNode object a memebr variable.
+        // Also, because we inherit from Node, its constructor is called first. However, because these are 
+        // parametrized constructor, this initialization list actually gets checked before the parent constructor
+        // in order to determine which parent contructor to call. So what happens is:
+ 
+        // 1. Create RootNode object 2. Go to RootNode constructor initialization list 3. Go to RootNode's Node construcor
+        // 4. Go to HighscoresNode constructor initialization list 5. go to HighscoresNode's Node constructor
+        // 6. Go to Highscores's constructor 7. Go to RootNode's constructor
+        : Node(renderer_in, parentNode_in)
     {
+        // first create the children nodes and add them to the list
+        highscoresNode = new HighscoresNode(getRenderer(), this);
+        gameMenuNode = new GameMenuNode(getRenderer(), this);
+        optionsNode = new OptionsNode(getRenderer(), this);
+
+        children.push_back(highscoresNode);
+        children.push_back(gameMenuNode);
+        children.push_back(optionsNode);
  
-        // first create screens for the node
-        MenuScreen* screen1 = createMenuScreen();
-        MenuScreen* screen2 = createMenuScreen();
+        // first create a MenuScreen object
+        MenuScreen* rootNodeScreen = createMenuScreen();
  
-        // create images and text to put on the screen using an ArcadeTexture object
-        ArcadeTexture* screen1Background = createImage(renderer_in, "rootNodeImages/rootNodeScreenBackground.png", true);
-        ArcadeTexture* screen2Background = createImage(renderer_in, "rootNodeImages/rootNodeScreenBackground.png", true);
-
-        ArcadeTexture* screen1Text = createSimpleText(renderer_in, "fonts/retro/italic.ttf", 100, "screen 1", 255, 255, 0);
-        screen1Text->setPosition(windowWidth / 2 - screen1Text->getW() / 2, 25);
-
-        ArcadeTexture* screen2Text = createSimpleText(renderer_in, "fonts/retro/italic.ttf", 100, "screen 2", 255, 255, 0);
-        screen2Text->setPosition(windowWidth / 2 - screen2Text->getW() / 2, 25);
-
-        // add the images and text to the screen after creating them
-        screen1->addTextureToScreen(screen1Background);
-        screen1->addTextureToScreen(screen1Text);
-
-        screen2->addTextureToScreen(screen2Background);
-        screen2->addTextureToScreen(screen2Text);
+        // create an image to put on the screen using an ArcadeTexture object
+        ArcadeTexture* rootNodeScreenBackground = createImage(renderer_in, "rootNodeImages/rootNodeScreenBackground.png", true);
+        rootNodeScreen->addTextureToScreen(rootNodeScreenBackground);
  
-        // make a text button to put on the screen1
-        SimpleButton* button1 = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "gotoscreen2", 255, 0, 0);
-        button1->setButtonPosition(windowWidth / 2 - button1->getWidth() / 2, screen1Text->getY() + screen1Text->getH() + 50);
-
-        // give this button an action
-        button1->setButtonAction(createAction(MOVE_SCREENS, screen2));
-       
-        // make a text button to put on the screen2
-        SimpleButton* button2 = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "gotoscreen1", 255, 0, 0);
-        button2->setButtonPosition(windowWidth / 2 - button2->getWidth() / 2, screen2Text->getY() + screen2Text->getH() + 50);
-       
-        // give this button an action       
-        button2->setButtonAction(createAction(MOVE_SCREENS, screen1));
-
-        // add the buttons to their screens
-        screen1->addButtonToScreen(button1);
-        screen2->addButtonToScreen(button2);
+        // create text to put on the screen using an ArcadeTexture object, initialize its size and position
+        ArcadeTexture* mainMenuText = createSimpleText(renderer_in, "fonts/retro/italic.ttf", 100, "MAIN MENU", 255, 255, 0);
+        mainMenuText->setPosition(windowWidth / 2 - mainMenuText->getW() / 2, 25);
+        rootNodeScreen->addTextureToScreen(mainMenuText);
  
-        // add the screens to the node
-        this->addScreen(screen1);
-        this->addScreen(screen2);
-
-        // tell the node the current screen
-        this->setCurrentScreen(screen1);
+ 
+        // make a text button to put on the screen
+        SimpleButton* highscoresButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "HIGHSCORES", 255, 0, 0);
+        highscoresButton->setButtonPosition(windowWidth / 2 - highscoresButton->getWidth() / 2,
+            mainMenuText->getY() + mainMenuText->getH() + 50);
+        highscoresButton->setButtonAction(createAction(MOVE_NODES, highscoresNode));
+        rootNodeScreen->addButtonToScreen(highscoresButton);
+ 
+        SimpleButton* gameMenuButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "GAME MENU", 255, 0, 0);
+        gameMenuButton->setButtonPosition(windowWidth / 2 - gameMenuButton->getWidth() / 2,
+            highscoresButton->getY() + highscoresButton->getHeight() + 25);
+        gameMenuButton->setButtonAction(createAction(MOVE_NODES, gameMenuNode));
+        rootNodeScreen->addButtonToScreen(gameMenuButton);
+ 
+        SimpleButton* optionsButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "OPTIONS", 255, 0, 0);
+        optionsButton->setButtonPosition(windowWidth / 2 - optionsButton->getWidth() / 2, 
+            gameMenuButton->getY() + gameMenuButton->getHeight() + 25);
+        optionsButton->setButtonAction(createAction(MOVE_NODES, optionsNode));
+        rootNodeScreen->addButtonToScreen(optionsButton);
+ 
+        this->addScreen(rootNodeScreen);
+        this->setCurrentScreen(rootNodeScreen);
     }
 };
