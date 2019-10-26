@@ -1,12 +1,12 @@
 // main.cpp
 
+// resources we need for the top level tier of the program
 #include "SDL.h"
 #include "SDL_mixer.h"
 #include "RootNode.h"
 #include "Config.h"
 
-// declaring pointer to objects that main needs, initialize to null
-// these objects are created in main because they are needed for the outermost loop
+// Pointers to objects needed to initialize our program (details not important)
 SDL_Window* arcadeSystemWindow = nullptr;
 SDL_Renderer* arcadeSystemRenderer = nullptr;
 TTF_Font* font = nullptr;
@@ -56,6 +56,7 @@ bool init()
 	return success;
 }
 
+// starting point of program execution
 int main(int argc, char* argv[])
 {	
 	// first call initialization
@@ -66,20 +67,23 @@ int main(int argc, char* argv[])
 	// if initializes successfully then continue
 	else
 	{
-		// first create the root node which triggers creation of all nodes
+		// first create the root node which triggers creation of all nodes through constructor
  		RootNode rootNode(arcadeSystemRenderer, nullptr); 
 		currentNode = &rootNode;
-
+		
+		// pointer to a music object, holds the music currently being played in the progrm
 		Mix_Music* currentMusic = nullptr;
-		bool soundState = false;
+		
+		// is the sound on or off
+		bool soundState = false; 
 
-		// flag for main loop 
+		// flag for main loop, is our program running? 
 		bool quit = false;
 
-		// main loop
+		// GUI loop
 		while (!quit)
 		{	
-			// handle events on queue until empty
+			// handle user events until none detected
 			SDL_Event e;
 			while (SDL_PollEvent(&e) != 0)
 			{
@@ -90,9 +94,10 @@ int main(int argc, char* argv[])
 				}
 				
 				// start update process by handling the next event on the event queue
+				// returns an action to execute in this top tier of the menu system
 				Action newAction = currentNode->update(&e);
 				
-				// check to see if the event triggers an action is executed in this outermost loop
+				// check to see what the action returned by the node's update is
 				switch (newAction.actionName)
 				{
 				case(MOVE_NODES):
