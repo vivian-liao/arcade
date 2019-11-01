@@ -50,7 +50,6 @@ Action SimpleGame::update(SDL_Event* event)
 
         else if((*event).key.keysym.sym == SDLK_p)
         {
-            setisNewGame(true);
             newAction = {MOVE_SCREENS, getPauseScreen()};
             return newAction;
         }
@@ -77,27 +76,31 @@ void SimpleGame::newGame()
 
 void SimpleGame::logic()
 {
-    if (getBall()->getXPos() < 0)
+    //ball hits left side of screen
+    if(getBall()->getXPos() < 0)
     {
         getBall()->setXPos(0);
         getBall()->setXVelocity(-(getBall()->getXVelocity()));
     }
-    
-    else if (getBall()->getYPos() < 0)
+
+    //ball hits top of screen
+    else if(getBall()->getYPos() < 0)
     {
         getBall()->setYPos(0);
         getBall()->setYVelocity(-(getBall()->getYVelocity()));
     }
 
-    else if (getBall()->getXPos() + getBall()->getWidth() > windowWidth)
+    //ball hits right of screen
+    else if((getBall()->getXPos() + getBall()->getWidth()) > windowWidth)
     {
-        getBall()->setXPos(windowWidth - getBall(->getWidth()));
+        getBall()->setXPos(windowWidth - getBall()->getWidth());
         getBall()->setXVelocity(-(getBall()->getXVelocity()));
     }
 
-    if (getBall()->getXPos() < 0)
+    //ball hits bottom of screen
+    else if(getBall()->getYPos() + getBall()->getHeight() > windowHeight)
     {
-        getBall()->setXPos(0);
-        getBall()->setXVelocity(-(getBall()->getXVelocity()));
+        getBall()->setYPos(windowHeight - getBall()->getHeight());
+        getBall()->setYVelocity(-(getBall()->getYVelocity()));
     }
 }

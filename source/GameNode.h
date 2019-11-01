@@ -4,16 +4,16 @@
 #include "Config.h"
 #include "SimpleGame.h"
 
-
 class GameNode : public Node
 {
+    public:
     GameNode(SDL_Renderer* renderer_in, Node* parentNode_in): Node(renderer_in, parentNode_in)
     {
-        SimpleGame* game = new SimpleGAme;
-        game->addTextureToScreen(createimage(renderer_in, "brickBreakerNodeImage/brickBreakerScreen.png", true));
+        SimpleGame* game = new SimpleGame;
+        //game->addTextureToScreen(createImage(renderer_in, "brickBreakerNodeImages/brickBreakerScreen.png", true));
 
         Ball* ball = new Ball;
-        ArcadeTexture* ballTexture = createImage(renderer_in, "brickBreakerNodeImage/ballTexture.png", true));
+        ArcadeTexture* ballTexture = createImage(renderer_in, "brickBreakerNodeImages/ballTexture.png");
 
         ball->setGameObjectTexture(ballTexture);
         ball->setState(true);
@@ -22,10 +22,10 @@ class GameNode : public Node
         game->addMovingEntity(ball);
         game->setBall(ball);
 
-        game->addScreen(game);
+        game->setisNewGame(true);
         game->setGameState(true);
 
-        this->
-        this->
+        this->addScreen(game);
+        this->setCurrentScreen(game);
     }
-}
+};

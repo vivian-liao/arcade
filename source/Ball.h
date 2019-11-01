@@ -7,9 +7,9 @@
 
 class Ball : public Entity
 {
-    public:
-        Ball();
-        void update(SDL_Event* event);
+	public:
+		Ball();
+		void update(SDL_Event* event);
 };
 
 #endif

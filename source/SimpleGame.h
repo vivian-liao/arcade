@@ -11,7 +11,7 @@ class SimpleGame : public GameScreen
 {
     public:
         SimpleGame();
-        Action update(SDL_Event* event);
+        Action update(SDL_Event* evnet);
         void logic();
 
         void newGame();
@@ -20,8 +20,7 @@ class SimpleGame : public GameScreen
         void setBall(Ball* ball_in) {ball = ball_in;}
         Ball* getBall() {return ball;}
     private:
-    Ball* ball;
-
+        Ball* ball;
 };
 
 #endif
