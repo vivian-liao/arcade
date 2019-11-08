@@ -6,6 +6,7 @@
 #include "GameScreen.h"
 #include "Ball.h"
 #include "Paddle.h"
+#include "Brick.h"
 #include "Config.h"
 
 class SimpleGame : public GameScreen
@@ -23,6 +24,7 @@ class SimpleGame : public GameScreen
 
         void setPaddle(Paddle* paddle_in) {paddle = paddle_in;}
         Paddle* getPaddle() {return paddle;}
+
     private:
         Ball* ball;
         Paddle* paddle;
