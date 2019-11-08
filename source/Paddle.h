@@ -1,4 +1,4 @@
-//Paddle.h
+// Paddle.h
 
 #ifndef PADDLE_H
 #define PADDLE_H
@@ -7,9 +7,9 @@
 
 class Paddle : public Entity
 {
-    public:
-    Paddle();
-    void update(SDL_Event* event);
+public:
+	Paddle();
+	void update(SDL_Event* event);
 };
 
 #endif
