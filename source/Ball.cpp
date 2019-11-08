@@ -1,8 +1,5 @@
-//Ball.cpp
-
 #include "Ball.h"
 
-//constructor
 Ball::Ball()
 {
 	setXPos(0);
@@ -13,7 +10,7 @@ Ball::Ball()
 
 void Ball::update(SDL_Event* event)
 {
-	if(event == nullptr)
+	if (event == nullptr)
 	{
 		setXPos(getXPos() + getXVelocity());
 		setYPos(getYPos() + getYVelocity());
