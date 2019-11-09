@@ -1,3 +1,5 @@
+//OptionsNode.h
+
 #include "Node.h"
 #include "MenuScreen.h"
 #include "OptionsButton.h"
@@ -5,17 +7,12 @@
  
 class OptionsNode : public Node
 {
-    // all the variables this Node will hold
-private:
-    
-    Node* parentNode;
- 
 public:
     Mix_Music* music0 = nullptr;
     Mix_Music* music1 = nullptr;
     Mix_Music* music2 = nullptr; 
     // pass this in from main when you create it
-    OptionsNode(SDL_Renderer* renderer_in = nullptr, Node* parentNode_in = nullptr) :Node(renderer_in, parentNode_in), parentNode(parentNode_in)
+    OptionsNode(SDL_Renderer* renderer_in = nullptr, Node* parentNode_in = nullptr) : Node(renderer_in, parentNode_in)
     {
         MenuScreen* optionsNodeScreen = createMenuScreen();
  
@@ -62,7 +59,7 @@ public:
  
         SimpleButton* mainMenuButton = createSimpleTextButton(renderer_in,"fonts/pixel/classic.ttf", 30, "MAIN MENU", 255,0,0);
         mainMenuButton->setButtonPosition(windowWidth / 2 - mainMenuButton->getWidth() / 2, windowHeight - 50);
-        mainMenuButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+        mainMenuButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
  
         optionsNodeScreen->addButtonToScreen(mainMenuButton);
         optionsNodeScreen->addButtonToScreen(soundOptionButton);

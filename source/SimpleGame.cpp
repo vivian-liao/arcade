@@ -349,4 +349,8 @@ void SimpleGame::logic()
 			ball->setYVelocity(-(ball->getYVelocity()));
 		}
 	}
+	if(numFalse >= 50)
+	{
+		setGameState(false);
+	}
 }

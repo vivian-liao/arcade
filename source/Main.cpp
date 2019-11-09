@@ -1,17 +1,16 @@
 // main.cpp
+
+// resources we need for the top level tier of the program
 #include "SDL.h"
 #include "SDL_mixer.h"
-#include "SDL_ttf.h"
-#include "SDL_image.h"
-#include "Config.h"
-#include <stdio.h>
 #include "RootNode.h"
+#include "Config.h"
 
-// declaring pointer to objects that main needs, initialize to null
-// these objects are created in main because they are needed for the outermost loop
+// Pointers to objects needed to initialize our program (details not important)
 SDL_Window* arcadeSystemWindow = nullptr;
 SDL_Renderer* arcadeSystemRenderer = nullptr;
 TTF_Font* font = nullptr;
+Node* currentNode = nullptr;
 
 // initialization function, initializes above objects and calls some SDL initialization functions
 bool init()
@@ -57,6 +56,7 @@ bool init()
 	return success;
 }
 
+// starting point of program execution
 int main(int argc, char* argv[])
 {	
 	// first call initialization
@@ -67,34 +67,107 @@ int main(int argc, char* argv[])
 	// if initializes successfully then continue
 	else
 	{
+		// first create the root node which triggers creation of all nodes through constructor
+ 		RootNode rootNode(arcadeSystemRenderer, nullptr); 
+		currentNode = &rootNode;
+		
+		// pointer to a music object, holds the music currently being played in the progrm
+		Mix_Music* currentMusic = nullptr;
+		
+		// is the sound on or off
+		bool soundState = false; 
+
+		// flag for main loop, is our program running? 
 		bool quit = false;
-		RootNode rootNode(arcadeSystemRenderer, nullptr);
-		Node* currentNode = &rootNode;
+
+		// GUI loop
 		while (!quit)
 		{	
-			// handle events on queue until empty
+			// handle user events until none detected
 			SDL_Event e;
 			while (SDL_PollEvent(&e) != 0)
 			{
-				Action newAction = currentNode->update(&e);
 				// user requests quit by clicking window X
 				if (e.type == SDL_QUIT)
 				{
 					quit = true;
 				}
-
-				if(newAction.actionName == MOVE_NODES)
+				
+				// start update process by handling the next event on the event queue
+				// returns an action to execute in this top tier of the menu system
+				Action newAction = currentNode->update(&e);
+				
+				// check to see what the action returned by the node's update is
+				switch (newAction.actionName)
 				{
+				case(MOVE_NODES):
+				{
+					// when moving nodes, first exit, set the current, then enter
+					printf("\nMOVING NODES\n");
 					currentNode->exitNode();
 					currentNode = (Node*)(newAction.actionParameter);
 					currentNode->enter();
+					break;
+				}
+				case(CHANGE_SOUND):
+				{
+					// when changing sound to off, stop the music
+					printf("\n changing sound\n\n");
+					if (newAction.actionParameter == 0)
+					{
+						printf("\n sound turning off\n\n");
+						Mix_HaltMusic();
+						soundState = false;
+					}
+					else
+					{
+						soundState = true;
+						printf("\n sound turning on\n\n");
+						Mix_PlayMusic(currentMusic, -1);
+					}
+					break;
+				}
+				case(CHANGE_MUSIC):
+				{
+					// when changing music, check whether sound is on or not
+					printf("\n changing music\n\n");
+					printf("\n music pointer: %p\n\n", (Mix_Music*)(newAction.actionParameter));
+					currentMusic = (Mix_Music*)(newAction.actionParameter);
+					if (soundState == true)
+					{
+						if (currentMusic == nullptr)
+						{
+							Mix_HaltMusic();
+						}
+						else
+						{
+							Mix_PlayMusic(currentMusic, -1);
+						}
+					}
+					break;
+				}
+				default:
+					break;
 				}
 			}
+			// after handling all events, update all graphics for animation
 			currentNode->update(nullptr);
+
+			// after updating, render
 			currentNode->render(arcadeSystemRenderer);
 			SDL_RenderPresent(arcadeSystemRenderer);
 		}
 	}
-	
+	// after quitting, free up SDL_Resources -- Note: rootNode was created on the stack so after quitting it will go
+	// out of scope and its destructor will be called which triggers the destructors of all other nodes
+	Mix_CloseAudio();
+	TTF_CloseFont(font);
+	SDL_DestroyRenderer(arcadeSystemRenderer);
+	SDL_DestroyWindow(arcadeSystemWindow);
+
+	Mix_Quit();
+	IMG_Quit();
+	TTF_Quit();
+	SDL_Quit();
 	return 0;
 }

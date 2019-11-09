@@ -3,20 +3,20 @@
 #include "Node.h"
 #include "MenuScreen.h"
 #include "SimpleButton.h"
+#include "GameNode.h"
 #include "Config.h"
 
 class GameMenuNode : public Node
 {
-	// all the variables this Node will hold
 private:
-	// --------------------------------- PARENT NODE --------------------------------------
-	Node* parentNode;
-
+    GameNode* gameNode;
 public:
 	// pass this in from main when you create it
-	GameMenuNode(SDL_Renderer* renderer_in = nullptr, Node* parentNode_in = nullptr) :
-		Node(renderer_in, parentNode_in), parentNode(parentNode_in)
+	GameMenuNode(SDL_Renderer* renderer_in = nullptr, Node* parentNode_in = nullptr) : Node(renderer_in, parentNode_in)
 	{
+        gameNode = new GameNode(renderer_in, this);
+        children.push_back(gameNode);
+
     	MenuScreen* tetrisScreen = createMenuScreen();
 		MenuScreen* froggerScreen = createMenuScreen();
 		MenuScreen* brickBreakerScreen = createMenuScreen();
@@ -37,7 +37,7 @@ public:
 		SimpleButton* tetrisButton = createSimpleButton(renderer_in, "gameMenuNodeImages/tetrisGameButton.png");
 		tetrisButton->setButtonPosition(windowWidth / 2 - tetrisButton->getButtonTexture()->getW() / 2,
 			windowHeight / 2 - tetrisButton->getHeight() / 2);
-		tetrisButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		tetrisButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
 		tetrisScreen->addButtonToScreen(tetrisButton);
 
 		SimpleButton* tetrisNextButton = createSimpleButton(renderer_in, "gameMenuNodeImages/nextScreenButton.png");
@@ -48,7 +48,7 @@ public:
 		SimpleButton* tetrisMainMenuButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "MAIN MENU", 255, 0, 0);
 		tetrisMainMenuButton->setButtonPosition(windowWidth / 2 - tetrisMainMenuButton->getWidth() / 2, windowHeight - 50);
 		tetrisScreen->addButtonToScreen(tetrisMainMenuButton);
-		tetrisMainMenuButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		tetrisMainMenuButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
 
 		this->addScreen(tetrisScreen);
 
@@ -68,7 +68,7 @@ public:
 		
 		SimpleButton* brickBreakerButton = createSimpleButton(renderer_in, "gameMenuNodeImages/brickBreakerGameButton.png");
 		brickBreakerButton->setButtonPosition(windowWidth / 2 - brickBreakerButton->getWidth() / 2, windowHeight / 2 - brickBreakerButton->getHeight() / 2);
-		brickBreakerButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		brickBreakerButton->setButtonAction(createAction(MOVE_NODES, gameNode));
 		brickBreakerScreen->addButtonToScreen(brickBreakerButton);
 		
 		SimpleButton* brickBreakerNextButton = createSimpleButton(renderer_in, "gameMenuNodeImages/nextScreenButton.png");
@@ -78,7 +78,7 @@ public:
 
 		SimpleButton* brickBreakerMainMenuButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "MAIN MENU", 255, 0, 0);
 		brickBreakerMainMenuButton->setButtonPosition(windowWidth / 2 - brickBreakerMainMenuButton->getWidth() / 2, windowHeight - 50);
-		brickBreakerMainMenuButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		brickBreakerMainMenuButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
 		brickBreakerScreen->addButtonToScreen(brickBreakerMainMenuButton);
 
 		this->addScreen(brickBreakerScreen);
@@ -99,7 +99,7 @@ public:
 
 		SimpleButton* froggerButton = createSimpleButton(renderer_in, "gameMenuNodeImages/froggerGameButton.png");
 		froggerButton->setButtonPosition(windowWidth / 2 - froggerButton->getWidth() / 2, windowHeight / 2 - froggerButton->getHeight() / 2);
-		froggerButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		froggerButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
 		froggerScreen->addButtonToScreen(froggerButton);
 		
 		SimpleButton* froggerNextButton = createSimpleButton(renderer_in, "gameMenuNodeImages/nextScreenButton.png");
@@ -109,7 +109,7 @@ public:
 
 		SimpleButton* froggerMainMenuButton = createSimpleTextButton(renderer_in, "fonts/pixel/classic.ttf", 30, "MAIN MENU", 255, 0, 0);
 		froggerMainMenuButton->setButtonPosition(windowWidth / 2 - froggerMainMenuButton->getWidth() / 2, windowHeight - 50);
-		froggerMainMenuButton->setButtonAction(createAction(MOVE_NODES, parentNode));
+		froggerMainMenuButton->setButtonAction(createAction(MOVE_NODES, getParentNode()));
 		froggerScreen->addButtonToScreen(froggerMainMenuButton);
 		
 		this->addScreen(froggerScreen);
